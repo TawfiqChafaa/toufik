@@ -29,6 +29,31 @@ La clé historique cap.tasks.v1 est conservée.
 Une sauvegarde illisible n'est pas écrasée par une nouvelle tâche.
 La suggestion CAP utilise une règle locale : ce n'est pas un coach IA.
 
+## Ma boîte à idées
+Le bouton « + Idée » ouvre directement la saisie. Le texte et le classement sont
+enregistrés automatiquement après une courte pause (350 ms), ainsi qu'à la fermeture
+avec « Terminer », « Fermer » ou Échap. Attendre « Enregistrée sur cet appareil »
+avant de quitter : une fermeture forcée peut perdre les derniers caractères.
+
+Les idées utilisent une base IndexedDB séparée, cap.ideas, sans modifier les tâches.
+Recherche insensible aux accents, édition, suppression confirmée, catégories,
+statuts À explorer / En cours / Réalisée / Archivée, et date locale « À revoir le ».
+La date ne déclenche aucune notification. Le bouton de discussion explique que
+l'IA n'est pas encore disponible ; aucun envoi distant n'est effectué par ce bouton.
+
+Exporter les idées crée cap-idees.json (format cap.ideas, schemaVersion 1).
+Importer ajoute sans écraser : doublons identiques ignorés, conflit annulant
+l'import entier. La limite d'import est 5 Mo. Les exports des tâches restent distincts.
+Un export n'est pas une synchronisation automatique.
+En cas d'erreur de stockage, garder l'éditeur ouvert et exporter le brouillon
+de secours : son texte est récupérable manuellement, ce fichier n'est pas accepté
+par l'import normal. Aucun fichier personnel exporté ne doit être publié sur GitHub.
+
+La dictée d'idées fonctionne selon le navigateur, avec clavier vocal comme repli.
+Pas de note audio enregistrée dans cette version. Pas de comptes ou synchronisation.
+Les suppressions sont définitives ; conserver des sauvegardes régulières.
+Les protections de version empêchent deux onglets d'écraser la même idée silencieusement.
+
 ## Huawei et Windows
 L'interface utilise des standards web et aucun service Google.
 Les tests mobiles automatisés simulent un petit écran : ils ne certifient pas

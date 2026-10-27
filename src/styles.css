@@ -26,3 +26,21 @@ nav{gap:6px}nav button{padding:9px 11px;font-size:12px}
 @media(max-width:760px){header{padding:18px 20px;gap:18px}main{display:flex;flex-direction:column;padding:24px 16px 40px;gap:18px}.card{padding:22px}.intro{padding:6px}.grid{grid-template-columns:1fr 1fr}.task .danger{padding:8px}header p{font-size:11px}}
 @media(max-width:420px){.grid{grid-template-columns:1fr}.actions>button{flex:1}.task{flex-wrap:wrap}.task .details{min-width:150px}.task .danger{margin-left:30px}.intro h2{font-size:30px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+header #newIdea{margin-left:auto;background:#d7e8ae;color:#183f35;white-space:nowrap;font-size:15px}
+.ideas-card{grid-column:1/-1;grid-row:5}
+main>.card:nth-of-type(4){grid-row:6}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.section-heading h2{margin:8px 0}
+.idea-item{padding:20px 0;border-bottom:1px solid #e6eadf}.idea-item:last-child{border:0}
+.idea-preview{white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin:10px 0;line-height:1.65}
+.idea-meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.ideas-tools{margin-top:24px}
+.file-label{display:inline-flex;align-items:center;position:relative;margin:0;background:#eef2e9;padding:12px;border-radius:10px;cursor:pointer;min-height:44px}
+.file-label input{position:absolute;width:1px;height:1px;opacity:0;padding:0}.file-label:focus-within{outline:3px solid #b58226;outline-offset:3px}
+dialog{width:min(650px,calc(100% - 24px));max-height:90dvh;border:1px solid #dce3d6;border-radius:24px;padding:28px;color:#253c36;box-shadow:0 24px 80px #102d3d40}
+dialog::backdrop{background:#143f3680}dialog textarea{margin:8px 0 12px;line-height:1.6;resize:vertical;background:#fcfdfa;font-size:16px}
+#ideaSaveStatus,#ideasNotice{font-size:14px;line-height:1.6;color:#315b39}
+#ideasNotice:empty{display:none}
+dialog .actions{align-items:center}#ideaVoice{flex:1;min-width:180px}
+@media(max-width:760px){header{flex-wrap:wrap;gap:10px}header p{flex:1}header #newIdea{padding:10px 14px}.ideas-card{order:0}dialog{padding:20px}.section-heading{align-items:flex-start}.ideas-tools{align-items:stretch}input,select{font-size:16px}}
+
+.ideas-jump{display:inline-block;color:#186d56;font-weight:650;font-size:14px;margin-top:16px;padding:10px 0;text-underline-offset:4px}
