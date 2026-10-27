@@ -1,0 +1,11 @@
+{
+  "name": "CAP — Chaque Action Compte",
+  "short_name": "CAP",
+  "description": "Organise tes tâches et avance vers tes ambitions",
+  "lang": "fr",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f7f5",
+  "theme_color": "#173a35",
+  "icons": []
+}
