@@ -1,7 +1,9 @@
 import {IDEA_CATEGORIES,IDEA_STATUSES,filterIdeas,encodeIdeasBackup,decodeIdeasBackup} from "./ideas-domain.js";
 import {createIdeasRepository} from "./ideas-repository.js";
 const $=id=>document.getElementById(id);
-const repo=createIdeasRepository();
+import {initializeCloud} from "./cloud/runtime.js";
+const cloud=await initializeCloud();
+const repo=cloud?cloud.ideas:createIdeasRepository();
 let ideas=[], current=null, dirty=false, timer, saving=null, recognition=null;
 const fields=["ideaText","ideaCategory","ideaStatus","ideaReview"];
 const message=text=>{$("ideasNotice").textContent=text;};
@@ -33,8 +35,8 @@ function render() {
     const edit=document.createElement("button");edit.type="button";edit.className="secondary";edit.textContent="Ouvrir / modifier";edit.onclick=()=>openEditor(idea);
     const remove=document.createElement("button");remove.type="button";remove.className="danger";remove.textContent="Supprimer l’idée";
     remove.onclick=async()=>{
-      if(!confirm("Supprimer définitivement cette idée ? Exporte-la auparavant si tu souhaites la conserver."))return;
-      try {await repo.remove(idea.id,idea.version);await refresh();message("Idée supprimée de cet appareil.");}
+      if(!confirm(cloud?"Retirer cette idée du compte ? Les traces de synchronisation et sauvegardes peuvent encore conserver son contenu.":"Supprimer définitivement cette idée ? Exporte-la auparavant si tu souhaites la conserver."))return;
+      try {await repo.remove(idea.id,idea.version);await refresh();message(cloud?"Idée retirée localement. Vérifie l’état de synchronisation.":"Idée supprimée de cet appareil.");}
       catch(error){message(error.message+" Aucune suppression confirmée.");}
     };
     actions.append(edit,remove);article.append(meta,body,date,actions);list.append(article);
@@ -135,3 +137,5 @@ $("dictateIdea").onclick=()=>{
   try {session.start();} catch {session.onend();$("ideaVoice").textContent="Impossible de démarrer la dictée. Utilise ton clavier vocal.";}
 };
 refresh().catch(error=>message("Stockage des idées indisponible : "+error.message+" Aucune donnée effacée. La saisie et l’export du brouillon restent disponibles."));
+
+window.addEventListener("cap:cloud-change",()=>refresh().catch(()=>message("Actualisation des idées non terminée.")));

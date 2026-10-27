@@ -42,8 +42,11 @@ notifications CAP fermé exigent pour cette architecture un service serveur et u
 canal compatible. Aucun de ces services n'est activé par l'ajout à ce document.
 La capture d'idées reste la priorité de la prochaine version.
 
-## Prochaine priorité : comptes et synchronisation des tâches et idées
+## Comptes et synchronisation : code préparé, activation en attente
 
+Code ajouté pour Auth, cache par compte, synchronisation, migration et conflits,
+désactivé par défaut. Voir [l’état détaillé et les limites](docs/INTEGRATION_SUPABASE.md).
+L’activation et la validation du service réel restent sous contrôle de l’utilisateur.
 Préparation documentée sur la base du module idées réellement livré :
 [architecture Supabase actualisée](docs/PROPOSITION_SUPABASE.md) et
 [guide des configurations personnelles](docs/GUIDE_CONFIGURATION_SUPABASE.md).

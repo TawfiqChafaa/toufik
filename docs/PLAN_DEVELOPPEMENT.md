@@ -3,7 +3,7 @@
 Statut : première version locale des idées réalisée ; lots suivants proposés.
 Aucun service externe intégré.
 Conserver toutes les fonctionnalités existantes et leurs tests.
-La proposition Supabase reste à valider avant sa mise en œuvre.
+La proposition Supabase est validée ; code préparé, activation réelle en attente.
 Références : [architecture](../ARCHITECTURE.md),
 [secrétaire personnel](SECRETAIRE_PERSONNEL.md),
 [proposition Supabase](PROPOSITION_SUPABASE.md).
@@ -27,7 +27,10 @@ La priorité décidée après la livraison des idées est ce lot, avant le dialo
 Préparation détaillée : PROPOSITION_SUPABASE.md et GUIDE_CONFIGURATION_SUPABASE.md.
 Les 34 tests actuels restent la base de régression ; ajouter les tests RLS, de reprise
 et de migration avant de déclarer le lot prêt.
-Après validation Supabase : authentification, isolation serveur par utilisateur,
+État : code développé, tests locaux ajoutés ; aucune connexion réelle.
+Voir INTEGRATION_SUPABASE.md. L'activation, les tests hébergés et les essais physiques
+restent nécessaires avant usage quotidien.
+Après configuration personnelle Supabase : authentification, isolation serveur par utilisateur,
 cache par compte, file d'attente et résolution des conflits.
 Migrer tâches, idées et conversations seulement après sauvegarde et vérification.
 Prévoir stockage audio privé et sauvegardes distinctes avant tout envoi d'audio.

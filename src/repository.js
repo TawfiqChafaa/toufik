@@ -1,3 +1,4 @@
+import {initializeCloud} from "./cloud/runtime.js";
 import { normalizeTasks } from "./domain.js";
 // Interface de stockage à remplacer par un adaptateur synchronisé lorsque le serveur sera prêt.
 export function createTaskRepository(storage) {
@@ -8,6 +9,6 @@ export function createTaskRepository(storage) {
  };
 }
 export const taskRepository={
- load:()=>createTaskRepository(window.localStorage).load(),
- save:tasks=>createTaskRepository(window.localStorage).save(tasks)
+ load:async()=>{const ws=await initializeCloud();return ws?ws.tasks.load():createTaskRepository(window.localStorage).load();},
+ save:async tasks=>{const ws=await initializeCloud();return ws?ws.tasks.save(tasks):createTaskRepository(window.localStorage).save(tasks);}
 };

@@ -1,6 +1,9 @@
 # Comptes CAP et synchronisation : vos interventions après accord
 
-Statut : guide préparatoire, rien à créer immédiatement.
+Statut : intégration préparée en code, aucune connexion réelle activée.
+Vous pouvez maintenant créer vous-même le compte et le projet Free (étapes 2 et 3).
+N'activez pas encore le projet dans CAP : revenez après sa création pour appliquer
+et vérifier les protections avant toute connexion réelle de l'application.
 Aucun projet Supabase ni fournisseur e-mail n'a été créé par Codex.
 Aucun mot de passe ou secret ne doit être envoyé dans la conversation ou sur GitHub.
 
@@ -58,8 +61,8 @@ Saisir ses identifiants SMTP directement dans les paramètres sécurisés Supaba
 Ne pas acheter de domaine ou abonnement sans validation distincte.
 
 ## Étape 5 — Appliquer les protections et vérifier
-Après accord de connexion seulement, Codex préparera les migrations SQL,
-règles RLS, contraintes et tests. Selon les outils d'accès disponibles, vous devrez
+La migration supabase/migrations/001_cap_sync.sql et les tests locaux sont préparés.
+Après accord de connexion seulement, il faudra appliquer les protections au projet. Selon les outils d'accès disponibles, vous devrez
 exécuter les scripts revus dans le tableau de bord, ou autoriser leur application
 par une voie sécurisée. Aucune donnée personnelle ne sera importée avant les tests
 d'isolation avec deux utilisateurs fictifs.
@@ -104,3 +107,27 @@ Les dates « À revoir le » restent des repères sans notification.
 Aucun besoin de publier vos données, mots de passe ou clés secrètes.
 
 Référence : [architecture proposée](PROPOSITION_SUPABASE.md).
+
+
+## Repère dans la version préparée
+CAP propose « Mon compte » puis l'URL du projet et la clé publiable.
+Ces champs n'ont pas à être remplis maintenant : attendre la vérification du schéma
+et de l'Auth. Ne jamais coller une clé sb_secret ou service_role.
+Le bouton d'activation confirme explicitement la première connexion au service.
+Ensuite seulement : créer votre compte CAP quotidien et confirmer son e-mail.
+Pour l'état précis des tests et les limites : INTEGRATION_SUPABASE.md.
+
+
+## Activation sur chaque appareil, plus tard
+La configuration publique URL/clé est locale au navigateur. Il faudra saisir la
+même configuration sur Windows et les deux Huawei, puis se connecter au même
+compte CAP (pas au compte administrateur Supabase).
+Pour les liens de confirmation/récupération PKCE, utiliser le même navigateur
+et appareil que celui ayant initié la demande. Un lien ouvert ailleurs peut
+nécessiter une nouvelle demande sur cet appareil.
+
+## Résultats locaux de cette livraison
+19 tests métier/synchronisation et 30 parcours navigateur ont réussi.
+20 contrôles SQL ont réussi dans PostgreSQL 17 local avec deux utilisateurs fictifs.
+Les 34 tests précédents sont conservés. Aucun service hébergé, envoi d'e-mail réel
+ou téléphone physique n'a été validé par ces résultats.

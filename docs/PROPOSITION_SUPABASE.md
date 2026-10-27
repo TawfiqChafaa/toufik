@@ -1,6 +1,9 @@
 # Proposition : comptes CAP et synchronisation avec Supabase
 
-Statut : préparation documentaire à valider ; intégration Auth/synchronisation non commencée.
+Statut : architecture validée, code d’intégration préparé, service réel non connecté.
+Ce document conserve la proposition d’origine ; les choix exécutés, tests et limites
+sont précisés dans INTEGRATION_SUPABASE.md (table commune typée, identifiants conservés,
+RPC contrainte et rattrapage périodique).
 Analyse du code CAP au commit 9bfcf2df86db17aee4fd6d404f15bbf10be0738c.
 Sources officielles réactualisées le 27 octobre 2026 par git fetch du dépôt Supabase.
 Aucun projet, fournisseur e-mail ou hébergement créé ; aucune donnée personnelle envoyée.

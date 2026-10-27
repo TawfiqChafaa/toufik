@@ -7,9 +7,9 @@ header h1{font-size:34px;letter-spacing:-2px}header p{font-size:13px;max-width:3
 main{max-width:1120px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;padding:36px 24px 64px}
 .intro{grid-column:1/-1;padding:10px 0}.intro h2{font-size:clamp(28px,4vw,42px);font-weight:650;letter-spacing:-1.5px;margin:12px 0}.intro p{color:#63766e;margin:0;line-height:1.6}.eyebrow{font-size:11px;letter-spacing:2px;color:#547249;font-weight:750}
 .card{margin:0;padding:26px;box-shadow:0 6px 28px #173a3506;border:1px solid #e2e7dd;border-radius:22px;min-width:0}
-main>.card:nth-of-type(1){grid-column:1;grid-row:3;background:#eaf0df}
-main>.card:nth-of-type(2){grid-column:2;grid-row:3/5}
-main>.card:nth-of-type(3){grid-column:1;grid-row:4}
+main>.card:nth-of-type(1){grid-column:1;grid-row:4;background:#eaf0df}
+main>.card:nth-of-type(2){grid-column:2;grid-row:4/6}
+main>.card:nth-of-type(3){grid-column:1;grid-row:5}
 main>.card:nth-of-type(4){grid-column:1/-1}
 h2{font-size:20px;letter-spacing:-.4px}#date{text-transform:capitalize;color:#526747;font-size:14px}.coach{background:#ffffff85;line-height:1.7;padding:18px}
 #progressText{font-size:13px;font-weight:600}progress{height:9px;border:0;border-radius:20px;overflow:hidden}
@@ -28,8 +28,8 @@ nav{gap:6px}nav button{padding:9px 11px;font-size:12px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
 header #newIdea{margin-left:auto;background:#d7e8ae;color:#183f35;white-space:nowrap;font-size:15px}
-.ideas-card{grid-column:1/-1;grid-row:5}
-main>.card:nth-of-type(4){grid-row:6}
+.ideas-card{grid-column:1/-1;grid-row:6}
+main>.card:nth-of-type(4){grid-row:7}
 .section-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.section-heading h2{margin:8px 0}
 .idea-item{padding:20px 0;border-bottom:1px solid #e6eadf}.idea-item:last-child{border:0}
 .idea-preview{white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin:10px 0;line-height:1.65}
@@ -44,3 +44,10 @@ dialog .actions{align-items:center}#ideaVoice{flex:1;min-width:180px}
 @media(max-width:760px){header{flex-wrap:wrap;gap:10px}header p{flex:1}header #newIdea{padding:10px 14px}.ideas-card{order:0}dialog{padding:20px}.section-heading{align-items:flex-start}.ideas-tools{align-items:stretch}input,select{font-size:16px}}
 
 .ideas-jump{display:inline-block;color:#186d56;font-weight:650;font-size:14px;margin-top:16px;padding:10px 0;text-underline-offset:4px}
+
+[hidden]{display:none!important}
+#syncStatus{grid-column:1/-1;margin:0;font-size:13px}
+#accountDialog form{display:grid;gap:12px;margin:20px 0}
+#cloudConflicts pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:13px}
+#cloudConflicts button{margin:4px}
+header #accountOpen{white-space:nowrap}
