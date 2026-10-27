@@ -1,0 +1,41 @@
+import { test,expect } from "@playwright/test";
+test("créer, filtrer, terminer, recharger, exporter, importer et supprimer",async({page})=>{
+ const errors=[];page.on("pageerror",e=>errors.push(e.message));
+ await page.goto("/");
+ await page.getByLabel("Que dois-tu faire ?").fill("Préparer mon projet");
+ await page.getByLabel("Domaine").selectOption("Travail");
+ await page.getByLabel("Urgent",{exact:true}).check();
+ await page.getByRole("button",{name:"Ajouter la tâche",exact:true}).click();
+ await expect(page.locator(".task")).toHaveCount(1);
+ await expect(page.locator(".task")).toContainText("Urgent et important");
+ await page.reload();await expect(page.locator(".task")).toContainText("Préparer mon projet");
+ await page.getByRole("button",{name:"Aujourd'hui",exact:true}).click();
+ await expect(page.locator(".task")).toHaveCount(0);
+ await page.getByRole("button",{name:"Toutes",exact:true}).click();
+ await page.getByRole("checkbox",{name:"Terminer Préparer mon projet"}).check();
+ await expect(page.locator("#progress")).toHaveAttribute("value","100");
+ const downloadPromise=page.waitForEvent("download");await page.getByRole("button",{name:"Exporter mes tâches (JSON)"}).click();
+ const download=await downloadPromise;expect(download.suggestedFilename()).toBe("cap-taches.json");
+ const path=await download.path();
+ page.on("dialog",dialog=>dialog.accept());
+ await page.getByRole("button",{name:"Supprimer",exact:true}).click();await expect(page.locator(".task")).toHaveCount(0);
+ await page.locator("#importFile").setInputFiles(path);await expect(page.locator(".task")).toHaveCount(1);
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.screenshot({path:"test-results/cap-"+test.info().project.name+".png",fullPage:true});
+ expect(errors).toEqual([]);
+});
+test("dictée simulée et navigateur incompatible",async({page})=>{
+ await page.addInitScript(()=>{window.SpeechRecognition=class {start(){this.onresult({results:[[{transcript:"Appeler ma famille"}]]});}};});
+ await page.goto("/");await page.getByRole("button",{name:/Dicter une tâche/}).click();
+ await expect(page.locator("#title")).toHaveValue("Appeler ma famille");
+ await page.evaluate(()=>{window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined;});
+ await page.getByRole("button",{name:/Dicter une tâche/}).click();
+ await expect(page.locator("#voiceStatus")).toContainText("clavier vocal Huawei");
+});
+test("une sauvegarde corrompue est préservée",async({page})=>{
+ await page.goto("/");await page.evaluate(()=>localStorage.setItem("cap.tasks.v1","{corrompu"));await page.reload();
+ await expect(page.locator("#notice")).toContainText("Impossible de lire");
+ await page.locator("#title").fill("Ne pas écraser");
+ await page.getByRole("button",{name:"Ajouter la tâche",exact:true}).click();
+ expect(await page.evaluate(()=>localStorage.getItem("cap.tasks.v1"))).toBe("{corrompu");
+});
