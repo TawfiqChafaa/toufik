@@ -42,6 +42,18 @@ notifications CAP fermé exigent pour cette architecture un service serveur et u
 canal compatible. Aucun de ces services n'est activé par l'ajout à ce document.
 La capture d'idées reste la priorité de la prochaine version.
 
+## Prochaine priorité : comptes et synchronisation des tâches et idées
+
+Préparation documentée sur la base du module idées réellement livré :
+[architecture Supabase actualisée](docs/PROPOSITION_SUPABASE.md) et
+[guide des configurations personnelles](docs/GUIDE_CONFIGURATION_SUPABASE.md).
+Prévoir un stockage local transactionnel avec file d'attente, versions serveur,
+isolation par utilisateur, migration vérifiée et reprise sans écrasement.
+Le dépôt actuel d’idées protège les écritures entre onglets via IndexedDB ;
+il ne fournit ni rafraîchissement temps réel des onglets ni synchronisation des appareils.
+La préparation ne connecte aucun service ; attendre l'accord avant activation
+et décider séparément de tout accès HTTPS de test ou dépense.
+
 ## Étapes futures
 0. Ma boîte à idées : priorité à la capture rapide et à la sauvegarde locale,
    sans attendre les comptes ni l’IA. Détail ci-dessous et dans

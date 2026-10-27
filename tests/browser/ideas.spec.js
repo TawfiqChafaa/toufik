@@ -40,6 +40,8 @@ test("capture, édition, classement, recherche, date et conservation des tâches
 });
 test("fermer immédiatement sauvegarde et une saisie vide ne crée rien",async({page})=>{
  await page.goto("/");await page.locator("#newIdea").click();await page.locator("#ideaText").fill("Idée éclair");await page.locator("#closeIdea").click();
+ // Le clic lance une transaction asynchrone ; attendre sa confirmation par la fermeture.
+ await expect(page.locator("#ideaDialog")).not.toBeVisible();
  await page.reload();await expect(page.locator(".idea-item")).toContainText("Idée éclair");
  await page.locator("#newIdea").click();await page.keyboard.press("Escape");await expect(page.locator("#ideaDialog")).not.toBeVisible();
  expect(await saved(page)).toHaveLength(1);

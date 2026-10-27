@@ -22,7 +22,19 @@ Statuts livrés : À explorer, En cours, Réalisée, Archivée.
 La date « À revoir le » est un repère sans notification et le bouton de discussion
 annonce explicitement l'absence d'IA.
 
-## 2. Échanges simples et voix, sans abonnement IA
+## 2. Prochain lot prioritaire : comptes, sauvegardes et synchronisation
+La priorité décidée après la livraison des idées est ce lot, avant le dialogue guidé.
+Préparation détaillée : PROPOSITION_SUPABASE.md et GUIDE_CONFIGURATION_SUPABASE.md.
+Les 34 tests actuels restent la base de régression ; ajouter les tests RLS, de reprise
+et de migration avant de déclarer le lot prêt.
+Après validation Supabase : authentification, isolation serveur par utilisateur,
+cache par compte, file d'attente et résolution des conflits.
+Migrer tâches, idées et conversations seulement après sauvegarde et vérification.
+Prévoir stockage audio privé et sauvegardes distinctes avant tout envoi d'audio.
+Vérifier récupération du compte, restauration et essais entre les trois appareils.
+Pas de dépendance à la présence des services Google sur les téléphones.
+
+## 3. Conversation guidée — après la synchronisation
 Entrée « Discuter avec CAP » sur l'accueil, conversation guidée clairement annoncée,
 microphone volontaire, transcription à vérifier et lecture vocale facultative.
 Questions de bilan locales, réponses par règles et cartes à confirmer pour
@@ -30,14 +42,6 @@ les objets déjà disponibles (tâches et idées).
 Notes audio locales avec écoute et export incluant les fichiers.
 Vérifier compatibilité et interruptions Huawei ; conserver tous les accès écrits.
 Ce lot ne promet pas encore une conversation naturelle générale.
-
-## 3. Comptes, sauvegardes et synchronisation
-Après validation Supabase : authentification, isolation serveur par utilisateur,
-cache par compte, file d'attente et résolution des conflits.
-Migrer tâches, idées et conversations seulement après sauvegarde et vérification.
-Prévoir stockage audio privé et sauvegardes distinctes avant tout envoi d'audio.
-Vérifier récupération du compte, restauration et essais entre les trois appareils.
-Pas de dépendance à la présence des services Google sur les téléphones.
 
 ## 4. Organisation : rendez-vous, personnes et planning
 Définir objectifs/projets/rendez-vous séparément, disponibilité et fuseau.

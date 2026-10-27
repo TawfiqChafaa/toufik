@@ -1,8 +1,9 @@
 # Proposition : comptes CAP et synchronisation avec Supabase
 
-Statut : proposition à valider, aucune modification de l'architecture exécutée.
-Analyse du code CAP au commit a83b1eeb78057bd80eda90a17beadcf033816b4c.
-Recherche du 27 octobre 2026. Aucun projet, fournisseur e-mail ou hébergement créé.
+Statut : préparation documentaire à valider ; intégration Auth/synchronisation non commencée.
+Analyse du code CAP au commit 9bfcf2df86db17aee4fd6d404f15bbf10be0738c.
+Sources officielles réactualisées le 27 octobre 2026 par git fetch du dépôt Supabase.
+Aucun projet, fournisseur e-mail ou hébergement créé ; aucune donnée personnelle envoyée.
 Aucune migration SQL ni nouvelle dépendance applicative ajoutée.
 
 ## 1. Conclusion
@@ -13,7 +14,7 @@ utilisateurs distincts. Ce choix ne garantit pas une disponibilité permanente.
 Il faut préparer des sauvegardes indépendantes et un service d'e-mails adapté.
 
 Recommandation : conserver l'interface JavaScript actuelle, Supabase Auth pour les
-comptes, PostgreSQL avec contrôle d'accès par ligne pour les tâches et Realtime
+comptes, PostgreSQL avec contrôle d'accès par ligne pour tâches ET idées, et Realtime
 comme signal de rafraîchissement. Ajouter un cache local IndexedDB et une file
 d'opérations pour les coupures de connexion. Aucun besoin de Next.js à ce stade.
 
@@ -24,13 +25,17 @@ d'opérations pour les coupures de connexion. Aucun besoin de Next.js à ce stad
 | Interface | index.html et styles responsive | Conservés, ajout des écrans de compte et de l'état de synchronisation |
 | Métier | domain.js valide tâches, domaines, dates et priorités | Conservé et complété par des métadonnées de synchronisation |
 | Stockage | repository.js lit et remplace toute la liste localStorage | Adaptateur asynchrone, cache local et mises à jour par tâche |
-| Coordination | app.js attend une sauvegarde immédiate | Gestion explicite des états attente, erreur, session expirée et conflit |
+| Idées | ideas-repository.js utilise IndexedDB et une version contre les conflits entre onglets | Conserver le métier et adapter le dépôt ; version locale distincte de la version serveur |
+| Coordination | app.js attend une sauvegarde immédiate ; ideas-ui.js utilise déjà des sauvegardes asynchrones | Gestion explicite des états attente, erreur, session expirée et conflit |
 | Identité | Aucune | Supabase Auth |
-| Tests | 5 tests métier/stockage et 6 parcours Chromium | Conservés, plus tests de sécurité et multi-appareils |
+| Tests | 10 tests métier/stockage et 24 parcours Chromium | Conservés, plus tests de sécurité et multi-appareils |
 
 Les identifiants existants sont des chaînes, parfois non UUID ; leur conversion
-devra être explicite. Les dates de tâches ne contiennent pas de fuseau horaire.
-Les 11 tests existants ne prouvent pas encore la sécurité ou la synchronisation.
+devra être explicite. Les dates de tâches et de révision des idées ne contiennent pas de fuseau horaire.
+Les 34 tests existants ne prouvent pas encore la sécurité inter-comptes ou la synchronisation.
+Les versions des idées sont locales : les conserver comme provenance, sans les utiliser
+comme preuve de version serveur. Leurs suppressions actuelles sont définitives ;
+les futures suppressions synchronisées devront garder une trace.
 
 ## 3. Comptes et connexion
 
@@ -56,7 +61,8 @@ Les 11 tests existants ne prouvent pas encore la sécurité ou la synchronisatio
 
 ## 4. Protection des données côté serveur
 
-Chaque tâche aura un propriétaire user_id lié à auth.users.
+Chaque tâche et chaque idée auront un propriétaire user_id lié à auth.users.
+Les journaux de changements, opérations rejouables et migrations auront la même isolation.
 Activer RLS (Row Level Security) avant toute exposition des tables.
 
 Pour le rôle authenticated :
@@ -93,7 +99,10 @@ ou autre secret très sensible sans analyse complémentaire.
 
 Modèle envisagé, pas encore créé :
 - Identifiant UUID serveur et user_id.
-- Champs actuels conservés : titre, domaine, date, durée, urgence, importance, terminé.
+- Deux tables métier distinctes tasks et ideas, pas une liste JSON partagée.
+- Tâches : titre, domaine, date, durée, urgence, importance et terminé conservés.
+- Idées : texte, catégorie, statuts À explorer / En cours / Réalisée / Archivée,
+  date de révision et dates historiques conservés.
 - created_at, updated_at attribués par le serveur, version croissante,
   deleted_at pour les suppressions logiques.
 - Identifiant unique d'opération et correspondance des identifiants historiques
@@ -107,7 +116,7 @@ Modèle envisagé, pas encore créé :
 3. Envoyer l'opération authentifiée avec la version attendue et un identifiant
    de tentative réutilisable. Une fonction transactionnelle compare la version,
    applique le changement et rend les nouvelles tentatives sans effet supplémentaire.
-4. Si un autre appareil a changé la tâche, conserver les deux versions et demander
+4. Si un autre appareil a changé la tâche ou l’idée, conserver les deux versions et demander
    laquelle garder, avec possibilité de dupliquer. Ne pas choisir silencieusement
    la dernière horloge de téléphone.
 5. Une suppression reste un changement synchronisé, pas une disparition immédiate.
@@ -236,13 +245,13 @@ Aucun accès de ce type ni publication n'a été créé pendant cette étude.
 
 ## 9. Ordre de réalisation proposé après accord
 
-Mise à jour du cahier des charges : « Ma boîte à idées » passe en priorité pour
-la prochaine version, avec capture texte/dictée et sauvegarde locale automatique.
-Cette préparation ne valide ni ne déclenche la mise en œuvre de Supabase.
+La boîte à idées locale est désormais réalisée. La priorité suivante est la
+synchronisation sécurisée des tâches ET des idées, sans intégrer l'IA ou l'audio.
+Cette préparation ne valide ni ne déclenche la connexion à Supabase.
 Voir [le plan général](PLAN_DEVELOPPEMENT.md) et [l’architecture](../ARCHITECTURE.md).
 
-Après les comptes, étendre les règles de propriété et de synchronisation aux idées,
-à leurs versions et aux discussions. L’audio exigera un espace Storage privé et
+Dès cette étape, appliquer la propriété et la synchronisation aux idées comme aux
+tâches. Les discussions futures feront l'objet d'une extension ultérieure. L’audio exigera un espace Storage privé et
 des sauvegardes distinctes des dumps de base ; ses quotas et coûts devront être
 réévalués. Le quota gratuit de fichiers ne vaut pas autorisation d’envoi automatique.
 
@@ -265,7 +274,9 @@ Critères de validation :
 - Déconnexion/reconnexion et changement de compte ne divulguent pas le cache précédent.
 - Expiration de session ou projet en pause ne supprime pas les changements locaux.
 - Migration interrompue puis reprise et restauration depuis sauvegarde réussissent.
-- Les 11 tests actuels restent utiles et passent après adaptation nécessaire.
+- Les 34 tests actuels sont conservés et passent après adaptation nécessaire.
+- Toutes ces vérifications couvrent les tâches ET les idées, y compris recherche,
+  catégories, statuts et dates de révision sans notification.
 
 ## 10. Sources
 
@@ -282,3 +293,139 @@ officiel supabase/supabase, révision :
 - Sécurité et disponibilité : https://github.com/supabase/supabase/blob/5bdb7399e80c8ed09c4633174f6e569fd58d8d7f/apps/docs/content/guides/deployment/going-into-prod.mdx
 
 Page à revérifier lors de la création : https://supabase.com/pricing
+
+## 11. Contrat technique avant implémentation
+
+### Séparation des responsabilités
+Conserver index.html, les styles et la logique de validation métier.
+Introduire après accord :
+- service de session Auth (connexion, confirmation, récupération, déconnexion) ;
+- dépôt local asynchrone commun aux tâches et idées dans une NOUVELLE base
+  IndexedDB versionnée, sans modifier destructivement les stockages historiques ;
+- moteur de synchronisation séparé de l'interface ;
+- adaptateur Supabase pour les opérations autorisées et la lecture des changements ;
+- assistant de migration avec aperçu et rapport de vérification.
+Aucun passage à un nouveau framework requis. Le SDK Supabase sera verrouillé
+dans le lockfile et servi localement, sans dépendance à un CDN à l'exécution.
+
+L'interface n'attend pas le réseau pour confirmer une sauvegarde LOCALE réussie.
+Elle affiche séparément : « Sur cet appareil », « En attente », « Synchronisé »,
+« Hors connexion », « Connexion à renouveler » et « Conflit à résoudre ».
+Un échec local ne doit jamais apparaître comme une sauvegarde réussie.
+
+### Modèles proposés, non créés
+Tables tasks et ideas : id UUID, user_id, contenu validé, server_version,
+server_created_at, server_updated_at, deleted_at.
+Provenance conservée : legacy_id, identifiant de source d'import,
+dates historiques connues et version locale historique.
+Ne pas inventer une date de création pour une ancienne tâche qui n'en possède pas.
+Préserver createdAt/updatedAt des idées sans les remplacer par la date d'import.
+Les champs datetime-local sont conservés sans conversion implicite en UTC ;
+demander le fuseau souhaité avant toute conversion future.
+
+Tables techniques envisagées : opérations traitées par utilisateur et operation_id,
+journal de changements ordonné, état de migration et correspondances des identifiants.
+Contraintes serveur sur longueur, catégories, statuts, booléens, durées et dates.
+Index au minimum par propriétaire et identifiant/ordre de changement.
+Les tables techniques ne doivent pas exposer les données d'autres comptes.
+
+### Écriture locale, reprise et conflits
+Une transaction IndexedDB écrit le nouvel état ET l'opération à envoyer.
+Distinguer la révision locale de server_version. Une idée locale en version 7
+n'est pas une idée distante déjà en version 7.
+Conserver la base serveur connue, les changements locaux et la version reçue
+pour pouvoir expliquer un conflit sans perdre de variante.
+
+Chaque envoi contient operation_id stable, objet et version serveur attendue.
+Le serveur authentifie l'utilisateur, vérifie le propriétaire et la version,
+puis enregistre objet, résultat d'opération et événement dans une transaction.
+Le serveur déduit le propriétaire de la session ; une valeur fournie par le client
+n'accorde aucun droit. Les versions et métadonnées sont gérées par le serveur.
+Une réponse perdue se récupère en rejouant le même identifiant d'opération :
+pas de nouvelle création. Les opérations d'un même objet sont ordonnées.
+Si l'utilisateur continue de saisir pendant un envoi, ne pas effacer ces nouvelles
+modifications quand l'accusé de réception de l'état précédent arrive.
+
+Au retour réseau : temporisation progressive en cas d'échec, rattrapage,
+rapprochement des versions puis reprise des opérations compatibles.
+Une session expirée suspend les envois mais ne détruit pas la file locale.
+Une validation rejetée reste visible et exportable ; pas de boucle de réessai infinie.
+
+Conflit : présenter « sur cet appareil » et « autre appareil », avec choix explicite
+ou conservation des deux, y compris modification contre suppression.
+Ne pas utiliser l'heure du téléphone pour désigner silencieusement un gagnant.
+
+### Lecture cohérente et suppressions
+Realtime n'est qu'un signal ; relire aussi à l'ouverture, au retour au premier plan
+et au rétablissement réseau. Une coupure Realtime ne doit pas perdre des changements.
+Le journal doit être paginé avec un curseur dont l'ordre respecte les transactions
+validées, et une lecture initiale cohérente avec son point de reprise.
+Un simple updated_at ou numéro de séquence attribué avant validation ne suffit pas :
+deux transactions peuvent être validées dans un ordre différent.
+Prévoir sérialisation transactionnelle par utilisateur pour l'allocation du curseur
+et la publication des événements, avec tests d'écritures concurrentes.
+
+Garder les suppressions logiques tant que nécessaire pour les appareils absents.
+Si un journal est purgé, imposer une resynchronisation complète aux clients dont
+le curseur est trop ancien ; ne pas appliquer aveuglément leur copie ancienne.
+Ne pas créer de nouveau un identifiant supprimé par un simple upsert.
+Tester la reprise d'un appareil resté hors ligne longtemps.
+
+### Session et appareil partagé
+Cache, curseur et file d'attente sont indexés par utilisateur.
+Le mode local sans compte reste un espace distinct, jamais attribué automatiquement
+au prochain utilisateur connecté.
+À la déconnexion, proposer d'abord la synchronisation ou un export des changements
+non envoyés, puis fermer les abonnements et masquer les données. Pas de transfert
+de la file d'un compte à un autre. La politique de nettoyage/retention sur appareil
+personnel sera explicite, sans affirmer qu'un navigateur déverrouillé est inviolable.
+Prévoir renouvellement de session et déconnexion des autres sessions dans la mesure
+des capacités du fournisseur, à tester notamment après récupération du compte.
+
+## 12. Migration des stockages réellement présents
+
+Sources :
+- cap.tasks.v1 : tableau JSON localStorage, sans date/version serveur ;
+- base IndexedDB cap.ideas, store ideas : version locale et dates existantes ;
+- exports cap-taches.json et cap-idees.json (cap.ideas, schemaVersion 1).
+Ne pas assimiler un brouillon de secours cap.ideas.draft à un export complet :
+prévoir une récupération manuelle de son texte avant migration.
+
+Geler une copie source pour l'import et conserver toute saisie ultérieure dans
+une file séparée jusqu'à la fin : ne pas ignorer une idée ajoutée pendant le transfert.
+Enregistrer source, identifiant historique et correspondance UUID dans un manifeste
+persistant lié au compte. Réimport d'un même contenu : aucun doublon.
+Même identifiant et contenu différent : conserver les variantes et demander un choix.
+Identifiants différents avec texte identique : signaler les ressemblances sans fusion forcée.
+Comparer les champs, pas seulement les totaux, après relecture distante et sur
+un second appareil. Si une validation actuelle rejette une ancienne donnée,
+la mettre en quarantaine exportable, sans correction destructive silencieuse.
+
+Les originaux localStorage/IndexedDB et leurs exports restent intacts.
+L'ancien bouton d'import des tâches remplace la liste locale : ne pas l'utiliser
+comme outil de migration cloud. La nouvelle migration aura son propre parcours.
+Un retour à l'ancien code ne voit pas les changements du nouveau cache :
+exporter et vérifier la compatibilité de restauration avant tout retour arrière.
+
+## 13. Vérifications et étape d'accord
+
+État présent : application locale seulement, aucun compte ni test RLS déployé.
+La suite actuelle comprend 10 tests métier et 24 parcours Chromium (34 au total).
+Réexécution pendant cette préparation : 10/10 et 24/24 réussis. Un test de fermeture
+rapide a été adapté pour attendre la fermeture effective après transaction, avant
+rechargement ; son scénario a également réussi trois fois par format d’écran.
+Aucun code applicatif modifié et aucun test existant supprimé.
+La réexécuter avant et après les modifications ; conserver les assertions utiles.
+Ajouter ensuite :
+- tests SQL avec deux comptes et accès non authentifié, y compris fonctions,
+  abonnements, journaux et tentatives de changement de propriétaire ;
+- tests de synchronisation sur deux contextes avec session et cache indépendants ;
+- réponse perdue, reprise, opérations rejouées, curseurs et transactions concurrentes ;
+- conflits tâche/idée, suppression contre modification, compte changé en cours d'envoi ;
+- migration répétée/interrompue et restauration complète, anciens formats compris ;
+- tests physiques sur les trois appareils et coupure réseau prolongée.
+
+La prochaine décision porte sur cette architecture, le périmètre tâches + idées,
+le pilote Supabase Free et les étapes de configuration. Elle ne vaut pas autorisation
+de dépenses, de publication publique ou d'intégration d'IA.
+Voir GUIDE_CONFIGURATION_SUPABASE.md pour vos interventions exactes.
