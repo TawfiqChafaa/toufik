@@ -32,9 +32,12 @@ export function createSyncWorkspace({owner,store,remote,onChange=()=>{},onStatus
   const key=keyOf(record.kind,record.id),local=s.records[key];
   if(local && record.seq<=local.seq)return;
   const pending=s.queue.some(o=>o.key===key);
+  const data=pending?local.data:incoming;
+  const deleted=pending?local.deleted:record.deleted;
+  // Une confirmation serveur sans changement de contenu n'invalide pas l'éditeur.
+  const changed=!local||local.deleted!==deleted||JSON.stringify(local.data)!==JSON.stringify(data);
   s.records[key]={...local,kind:record.kind,id:record.id,serverVersion:record.version,seq:record.seq,
-   data:pending?local.data:incoming,deleted:pending?local.deleted:record.deleted,
-   revision:(local?.revision||0)+1};
+   data,deleted,revision:(local?.revision||0)+(changed?1:0)};
  }
  async function sync() {
   guard();if(!remote)return;
@@ -100,12 +103,12 @@ export function createSyncWorkspace({owner,store,remote,onChange=()=>{},onStatus
    list:()=>read("idea"),
    save:async idea=>{
     const clean=validateIdea(idea);
-    await change(s=>{
+    return change(s=>{
      const prior=s.records[keyOf("idea",idea.id)];
      if((prior&&prior.revision!==idea.version-1)||(!prior&&idea.version!==1))throw Error("Idée modifiée ailleurs. Recharge avant de continuer.");
      enqueue(s,"idea",idea.id,cleanData("idea",clean));
+     return {...clean,version:s.records[keyOf("idea",idea.id)].revision};
     });
-    return (await read("idea")).find(i=>i.id===idea.id);
    },
    remove:async(id,version)=>change(s=>{
     const r=s.records[keyOf("idea",id)];

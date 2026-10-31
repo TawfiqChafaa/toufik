@@ -120,3 +120,22 @@ test("configuration : seules URL du projet et clés publiques sont acceptées",(
   {url:"https://exemple.supabase.co",publishableKey:"x."+btoa(JSON.stringify({role:"service_role"}))+".x"}
  ])assert.throws(()=>validateConfig(config));
 });
+test("une confirmation serveur n'invalide pas une idée ouverte dans l'éditeur",async()=>{
+ const cloud=server(),a=ws("A",memoryStore(),cloud.remote("A"));
+ const saved=await a.ideas.save(idea);
+ await a.sync();
+ assert.equal((await a.ideas.list())[0].version,saved.version);
+ const edited=await a.ideas.save({...saved,text:"Deuxième saisie",version:saved.version+1});
+ await a.sync();
+ assert.equal((await a.ideas.list())[0].version,edited.version);
+ assert.equal((await a.ideas.list())[0].text,"Deuxième saisie");
+});
+test("une véritable modification distante invalide toujours une ancienne idée ouverte",async()=>{
+ const cloud=server(),a=ws("A",memoryStore(),cloud.remote("A")),b=ws("A",memoryStore(),cloud.remote("A"));
+ await a.ideas.save(idea);await a.sync();await b.sync();
+ const stale=(await a.ideas.list())[0],other=(await b.ideas.list())[0];
+ await b.ideas.save({...other,text:"Changement distant",version:other.version+1});
+ await b.sync();await a.sync();
+ await assert.rejects(()=>a.ideas.save({...stale,text:"Ancien formulaire",version:stale.version+1}),/modifiée ailleurs/);
+ assert.equal((await a.ideas.list())[0].text,"Changement distant");
+});
